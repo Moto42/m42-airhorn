@@ -14,7 +14,7 @@ async function airhorn() {
       headers : {
         'Access-Control-Allow-Origin': `http://${airOSIp}`,
       }
-    }
+    };
     const j = await fetch(`https://${airOSIp}/survey.json.cgi`, fetchOptions)
       .then(r => r.json());
     console.log(j);
@@ -35,4 +35,4 @@ fetch(`https://${airOSIp}/login.cgi`,{
   headers : {
     'Access-Control-Allow-Origin': `*`,
   }
-})
+});
