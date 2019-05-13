@@ -9,14 +9,47 @@
 // @run-at       document-end
 // ==/UserScript==
 
+
+
 //Declaring some globals, because I'm a monster. :)
 const origin = window.location.origin;
-const mac = 	'AC:3B:77:B6:9B:6';
+const mac = 	'AC:3B:77:B6:9B:67';
 
+//sample survey result. fetchSurvey returns an array of these objects
+/*{
+  airmax_ie: "none"
+  auth_suites: "PSK"
+  channel: "153"
+  encryption: "wpa"
+  essid: "b69b62_5g"
+  frequency: "5.765"
+  group_cipher: "TKIP"
+  htcap: 2
+  ieee_mode: "802.11ac"
+  mac: "AC:3B:77:B6:9B:67"
+  mode: "Master"
+  mtik_name: ""
+  noise_level: "-96"
+  pairwise_ciphers: "CCMP TKIP"
+  quality: "8/94"
+  signal_level: "-88"
+}*/
 async function fetchSurvey() {
   const url = `${origin}/survey.json.cgi`;
   const survey = await fetch(url).then(r => r.json());
   return survey;
+}
+
+async function updateSurveyData(){
+  const signalOut = document.querySelector('#signal');
+  const survey = await fetchSurvey();
+  survey.forEach(r => {
+    if(r.mac === mac){
+      const msg = `${r.essid}, signal ${r.signal_level}, mode ${r.mode}`;
+      signalOut.innerHTML = msg;
+      console.log('update',r.signal_level);
+    }
+  });
 }
 
 function createHeading(str) {
@@ -49,6 +82,7 @@ function addMyContent() {
   outputRow.innerHTML = '<td id="signal">Signal will go here.</td>';
   tbody.appendChild(outputRow);
 
+  window.setInterval(updateSurveyData,10000);
 
 }
 
