@@ -9,12 +9,29 @@
 // @run-at       document-end
 // ==/UserScript==
 
-function getBodyCell(){
+// <tr><th colspan="3">Advanced Wireless Settings</th></tr>
+function createHeading(str) {
+  const row = document.createElement('tr');
+  row.innerHTML = `<tr><th colspan="3">${str}</th></tr>`;
+  return row;
+}
+
+function createLinktable() {
+  const table = document.createElement("table");
+  table.setAttribute('border','0');
+  table.setAttribute('cellpadding','0');
+  table.setAttribute('cellspacing','0');
+  table.setAttribute('class','linktable');
+  return table;
+}
+
+function getBodyCell() {
   return document.querySelector('body > table > tbody > tr:nth-child(3) > td');
 }
 
-function handleAirhornButton(){
+function handleAirhornButton() {
   clearContent();
+
 }
 
 // add my own menu button to the bar at the top of the screen.
