@@ -11,6 +11,13 @@
 
 //Declaring some globals, because I'm a monster. :)
 const origin = window.location.origin;
+const mac = 	'AC:3B:77:B6:9B:6';
+
+async function fetchSurvey() {
+  const url = `${origin}/survey.json.cgi`;
+  const survey = await fetch(url).then(r => r.json());
+  return survey;
+}
 
 function createHeading(str) {
   const row = document.createElement('tr');
@@ -41,6 +48,8 @@ function addMyContent() {
   const outputRow = document.createElement('tr');
   outputRow.innerHTML = '<td id="signal">Signal will go here.</td>';
   tbody.appendChild(outputRow);
+
+
 }
 
 function handleAirhornButton() {
@@ -72,5 +81,6 @@ function clearContent() {
     'use strict';
 
     injectMenuButton();
+
 
 })();
