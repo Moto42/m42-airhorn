@@ -29,9 +29,17 @@ function getBodyCell() {
   return document.querySelector('body > table > tbody > tr:nth-child(3) > td');
 }
 
+function addMyContent() {
+  const bodyCell = getBodyCell();
+  const tbody = bodyCell.appendChild(createLinktable().appendChild(document.createElement('tbody')));
+  const thing = createHeading('AirHorn');
+  console.log(thing);
+  tabelBody.appendChild(thing);
+}
+
 function handleAirhornButton() {
   clearContent();
-
+  addMyContent();
 }
 
 // add my own menu button to the bar at the top of the screen.
