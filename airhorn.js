@@ -9,7 +9,9 @@
 // @run-at       document-end
 // ==/UserScript==
 
-// <tr><th colspan="3">Advanced Wireless Settings</th></tr>
+//Declaring some globals, because I'm a monster. :)
+const origin = window.location.origin;
+
 function createHeading(str) {
   const row = document.createElement('tr');
   row.innerHTML = `<tr><th colspan="3">${str}</th></tr>`;
@@ -31,10 +33,14 @@ function getBodyCell() {
 
 function addMyContent() {
   const bodyCell = getBodyCell();
-  const tbody = bodyCell.appendChild(createLinktable().appendChild(document.createElement('tbody')));
-  const thing = createHeading('AirHorn');
-  console.log(thing);
-  tabelBody.appendChild(thing);
+  const linktable = createLinktable();
+  bodyCell.appendChild(linktable);
+  const tbody = document.createElement('tbody');
+  linktable.appendChild(tbody);
+  tbody.appendChild(createHeading('AirHorn'));
+  const outputRow = document.createElement('tr');
+  outputRow.innerHTML = '<td id="signal">Signal will go here.</td>';
+  tbody.appendChild(outputRow);
 }
 
 function handleAirhornButton() {
