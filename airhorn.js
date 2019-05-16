@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Airhorn for AirOS
 // @namespace    m42_airhorn
-// @version      0.1
+// @version      1.1
 // @include      *
 // @description  Provides audible cues to help establish connection with another radio, as specified by it's MAC address.
 // @author       Wesley Williams moto42@gmail.com
@@ -9,6 +9,9 @@
 // @run-at       document-end
 // ==/UserScript==
 
+/**
+ * Survey Status Aware update
+ */
 
 
 //Declaring some globals, because I'm a monster. :)
