@@ -13,7 +13,7 @@
 
 //Declaring some globals, because I'm a monster. :)
 const origin = window.location.origin;
-const mac = 	'AC:3B:77:B6:9B:67';
+let   mac = 	'';
 class SignalHistory {
   constructor(){
     this.history = [];
@@ -131,13 +131,30 @@ function injectSounds(){
   };
 }
 
+function handleInputMAC(event) {
+  console.log('called');
+  const newmac = event.target.value;
+  console.log(mac, newmac);
+  mac = newmac;
+  shistory.clear();
+  updateSurveyData();
+}
+
 function addMyContent() {
   const bodyCell = getBodyCell();
   const linktable = createLinktable();
   bodyCell.appendChild(linktable);
   const tbody = document.createElement('tbody');
   linktable.appendChild(tbody);
+
   tbody.appendChild(createHeading('AirHorn'));
+
+  const inputRow = document.createElement('tr');
+  inputRow.innerHTML = '<label for="inputMAC">Target MAC Address: </label><input id="inputMAC" name="inputMAC" type="text"></input>';
+  tbody.appendChild(inputRow);
+  const inputMAC = document.querySelector('#inputMAC');
+  inputMAC.addEventListener('input',handleInputMAC);
+
   const outputRow = document.createElement('tr');
   outputRow.innerHTML = '<td id="signal">Signal will go here.</td>';
   tbody.appendChild(outputRow);
@@ -148,6 +165,7 @@ function addMyContent() {
   shistory.sound_up = sounds.signal_up;
   shistory.sound_down = sounds.signal_down;
 
+  updateSurveyData();
   window.setInterval(updateSurveyData,10000);
 
 }
