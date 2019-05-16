@@ -9,6 +9,24 @@
 // @run-at       document-end
 // ==/UserScript==
 
+/*
+TODO: Survey Status Aware.
+So the sitre surveys will tell you when they finish running.
+We can look at tht information and only update the shistory when the survey
+has completed, thus giving feedback only when /new/ information is available
+
+I'm thinking a process loop like...
+
+start a survey
+initialize the first value with whatever signal data we can get right off the bat.
+while true
+  while true
+    await fetch an update from the survey.
+    if the survey is finished
+      update shistory
+      break
+  start a new survey
+ */
 
 
 //Declaring some globals, because I'm a monster. :)
