@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Airhorn for AirOS
 // @namespace    m42_airhorn
-// @version      1.2
+// @version      1.2.1
 // @include      *
 // @description  Provides audible cues to help establish connection with another radio, as specified by it's MAC address.
 // @author       Wesley Williams moto42@gmail.com
@@ -144,7 +144,7 @@ function injectSounds(){
 
 function handleInputMAC(event) {
   const newmac = event.target.value;
-  mac = newmac;
+  mac = newmac.trim();
   shistory.clear();
   updateSurveyData();
 }
