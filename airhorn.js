@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Airhorn for AirOS
 // @namespace    m42_airhorn
-// @version      1.1
+// @version      1.2
 // @include      *
 // @description  Provides audible cues to help establish connection with another radio, as specified by it's MAC address.
 // @author       Wesley Williams moto42@gmail.com
@@ -9,24 +9,7 @@
 // @run-at       document-end
 // ==/UserScript==
 
-/*
-TODO: Survey Status Aware.
-So the sitre surveys will tell you when they finish running.
-We can look at tht information and only update the shistory when the survey
-has completed, thus giving feedback only when /new/ information is available
 
-I'm thinking a process loop like...
-
-start a survey
-initialize the first value with whatever signal data we can get right off the bat.
-while true
-  while true
-    await fetch an update from the survey.
-    if the survey is finished
-      update shistory
-      break
-  start a new survey
- */
 
 
 //Declaring some globals, because I'm a monster. :)
@@ -63,6 +46,10 @@ class SignalHistory {
 }
 const shistory = new SignalHistory();
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 //sample survey result. fetchSurvey returns an array of these objects
 /*{
   airmax_ie: "none"
@@ -87,10 +74,16 @@ async function fetchSurvey() {
   const survey = await fetch(url).then(r => r.json());
   return survey;
 }
+// https://192.168.1.20/survey.json.cgi?iface=ath0&update=last&_=1558070868954
+async function fetchSurveyUpdate() {
+  const url = `${origin}/survey.json.cgi?iface=ath0&update=last&_=${Date.now()}`;
+  const survey = await fetch(url).then(r => r.json());
+  return survey;
+}
 
-async function updateSurveyData(){
+async function updateSurveyData(preSurvey){
   const signalOut = document.querySelector('#signal');
-  const survey = await fetchSurvey();
+  const survey = preSurvey !== undefined ? preSurvey : await fetchSurvey();
   survey.forEach(r => {
     if(r.mac === mac){
       const msg = `${r.essid}, signal ${r.signal_level}, mode ${r.mode}`;
@@ -150,12 +143,45 @@ function injectSounds(){
 }
 
 function handleInputMAC(event) {
-  console.log('called');
   const newmac = event.target.value;
-  console.log(mac, newmac);
   mac = newmac;
   shistory.clear();
   updateSurveyData();
+}
+
+/*
+TODO: Survey Status Aware.
+So the sitre surveys will tell you when they finish running.
+We can look at tht information and only update the shistory when the survey
+has completed, thus giving feedback only when /new/ information is available
+
+I'm thinking a process loop like...
+
+start a survey
+initialize the first value with whatever signal data we can get right off the bat.
+while true
+  while true
+    await fetch an update from the survey.
+    if the survey is finished
+      update shistory
+      break
+    optionaly: sleep half a second so we're not monopolizing the event loop
+  start a new survey
+ */
+async function surveyLoop() {
+  const firstSurvey = await fetchSurvey();
+  while(true){
+    while(true){
+      const update = await fetchSurveyUpdate();
+      // "scan_status" : "stopped"
+      if(update[0].scan_status === 'stopped'){
+        updateSurveyData(update);
+        break;
+      }
+       await sleep(500);
+    }
+    await fetchSurvey();
+  }
 }
 
 function addMyContent() {
@@ -180,19 +206,19 @@ function addMyContent() {
   const sounds = injectSounds();
 
   shistory.sound_same = sounds.signal_same;
-  shistory.sound_up = sounds.signal_up;
+  shistory.sound_up   = sounds.signal_up;
   shistory.sound_down = sounds.signal_down;
 
-  updateSurveyData();
-  window.setInterval(updateSurveyData,10000);
+  // updateSurveyData();
+  // window.setInterval(updateSurveyData,10000);
 
+  surveyLoop();
 }
 
 function handleAirhornButton() {
   clearContent();
   addMyContent();
 }
-
 
 
 // add my own menu button to the bar at the top of the screen.
