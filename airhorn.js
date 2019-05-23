@@ -50,6 +50,25 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+
+//converts the values of the signalHisotry into a string that can be inserted
+// into the 'points' attribute of an SVG polyLine;
+function createPolyGraphpoints(values, width=400, height=200){
+  const xSeparation = width/(values.length-1);
+  const pointArray = values.map((val,index) => {
+    const x = xSeparation*index;
+    let y;
+    if     (val <= 50)  y = 0;
+    else if(val >= 100) y = 100;
+    else {
+      y = ( (val-50)/(100-50) ) * height;
+    }
+    return [x,y];
+  });
+  const pointString = pointArray.reduce((str, point) => `${str} ${point.join(',')}`, "" );
+  return pointString;
+}
+
 //sample survey result. fetchSurvey returns an array of these objects
 /*{
   airmax_ie: "none"
