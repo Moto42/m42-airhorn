@@ -1,4 +1,4 @@
-// ==UserScript==
+1// ==UserScript==
 // @name         Airhorn for AirOS
 // @namespace    m42_airhorn
 // @version      1.2.1
@@ -30,7 +30,7 @@ class SignalHistory {
     if(typeof signal !== 'number') return;
     this.history.push(signal);
     //ensure that the number of signals in history does not exceed the max allowed
-    if(this.history.length > 60) this.history.unshift();
+    if(this.history.length > 60) this.history.shift();
     //Make the appropriate noise
     if(this.history.length > 1){
       const lastSig = this.history[this.history.length-1];
@@ -67,6 +67,25 @@ function createPolyGraphpoints(values, width=400, height=200){
   });
   const pointString = pointArray.reduce((str, point) => `${str} ${point.join(',')}`, "" );
   return pointString;
+}
+function generateGraphSVG(width=400, height=200){
+  const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+  const yGap = height/5;
+  const legend = () => {
+    const yVals = (() =>{
+        const out = [];
+        for (let i=0; i<=5; i++){
+          out.push(yGap*i);
+        }
+        return out;
+    })();
+    const yLine = (y) => `<line x1="0"  y1="${y}"  x2="width"  y2="${y}"    fill="none" stroke="black" stroke-dasharray="1 2" />`;
+    let output = "";
+    yVals.forEach(y => output+=`\n${yLine(y)}`);
+    return output;
+  };
+  svg.innerHTML = `<g>${legend()}<g>`;
+  return svg;
 }
 
 //sample survey result. fetchSurvey returns an array of these objects
@@ -169,7 +188,7 @@ function handleInputMAC(event) {
 }
 
 /*
-TODO: Survey Status Aware.
+DONE: Survey Status Aware.
 So the sitre surveys will tell you when they finish running.
 We can look at tht information and only update the shistory when the survey
 has completed, thus giving feedback only when /new/ information is available
@@ -264,6 +283,4 @@ function clearContent() {
     'use strict';
 
     injectMenuButton();
-
-
 })();
